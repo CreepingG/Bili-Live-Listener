@@ -4,13 +4,6 @@ const {$send, axios} = window;
 const btn = document.getElementById('btn');
 const input = document.getElementById('input');
 
-input.oninput = function(){ /* 高度自适应 */
-    this.style.height = 'auto';
-    this.style.height = this.scrollHeight + 'px';
-};
-input.value = window.$text;
-input.oninput();
-
 function GetRawInfo(roomid){
     return axios.get('https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=' + roomid).then(result=>result.data.data);
 }
@@ -64,6 +57,7 @@ btn.onclick = async function(){
     let taskId = ++cnt;
     const text = input.value;
     $send({
+        action: 'write',
         data: text
     });
 

@@ -82,7 +82,7 @@ function createWindow () {
 			win.webContents.openDevTools();
 		}
 		else if(action === 'write'){
-			fs.writeFile('config.txt', arg.data);
+			fs.writeFile('./config.txt', arg.data, console.log);
 		}
 	});
 }

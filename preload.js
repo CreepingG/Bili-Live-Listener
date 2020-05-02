@@ -3,15 +3,18 @@
 window.axios = require('axios');
 const ipcRenderer = require('electron').ipcRenderer;
 window.$send = data => ipcRenderer.send('asynchronous-message', JSON.stringify(data));
-window.$text = require('fs').readFileSync('./config.txt').toString();
 
 window.addEventListener('DOMContentLoaded', () => {
-	const replaceText = (selector, text) => {
-		const element = document.getElementById(selector);
-		if (element) element.innerText = text;
+	const input = document.getElementById('input');
+	input.oninput = function(){ /* 高度自适应 */
+		this.style.height = 'auto';
+		this.style.height = this.scrollHeight + 'px';
 	};
-
-	for (const type of ['chrome', 'node', 'electron']) {
-		replaceText(`${type}-version`, process.versions[type]);
+	try {
+		input.value = (require('fs').readFileSync('./config.txt') || '').toString();
+	} catch (err) {
 	}
+	input.value = input.value || '59901[沃玛] 33989[泛式]';
+
+	input.oninput();
 });
