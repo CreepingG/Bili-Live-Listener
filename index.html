@@ -12,7 +12,14 @@
   align-items: center;
   margin:50px">
     <label style="display: flex;
-    align-items: center;">直播房间号<textarea id="input" rows="1">59901沃玛 33989泛式</textarea></label>
+    align-items: center;">
+      直播房间号
+      <textarea id="input" rows="1">59901沃玛 33989泛式</textarea>
+      <span
+        style="border: 1px black dotted;margin: 0 5px; padding: 0 3px;"
+        title="文本框内的数字都会被识别为房间号，但[]内的文字会被视为注释而忽略"
+        >?</span>
+    </label>
     <button id="btn" style="font-size: 20px;">开始</button>
 
     <ul id="list"></ul>
