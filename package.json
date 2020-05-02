@@ -23,6 +23,8 @@
     "bili-api": "^1.4.3",
     "eslint": "^6.8.0",
     "eslint-plugin-html": "^6.0.2",
-    "node-notifier": "^7.0.0"
+    "eslint-plugin-vue": "^6.2.2",
+    "node-notifier": "^7.0.0",
+    "vue": "^2.6.11"
   }
 }

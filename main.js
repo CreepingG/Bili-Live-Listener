@@ -2,9 +2,9 @@
 const {app, BrowserWindow, Tray, Menu} = require('electron');
 const path = require('path');
 const notifier = require('node-notifier');
-
 const nodeConsole = require('console');
 const console = new nodeConsole.Console(process.stdout, process.stderr);
+const fs = require('fs');
 
 // 使用浏览器打开网页
 function Open(url){
@@ -59,7 +59,7 @@ function createWindow () {
 		console.log(arg);
 		arg = JSON.parse(arg);
 		let action = arg.action;
-		if (action === 'send'){
+		if (action === 'notify'){
 			let {title, body, url} = arg;
 			// event.sender.send('asynchronous-reply', 'pong');
 			// let notification = new Notification(title, {body});
@@ -80,6 +80,9 @@ function createWindow () {
 		}
 		else if(action === 'f12'){
 			win.webContents.openDevTools();
+		}
+		else if(action === 'write'){
+			fs.writeFile('config.txt', arg.data);
 		}
 	});
 }
