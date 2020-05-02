@@ -15,16 +15,15 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^8.2.4"
-  },
-  "dependencies": {
-    "axios": "^0.19.2",
     "babel-eslint": "^10.1.0",
-    "bili-api": "^1.4.3",
+    "electron": "^8.2.4",
     "eslint": "^6.8.0",
     "eslint-plugin-html": "^6.0.2",
     "eslint-plugin-vue": "^6.2.2",
-    "node-notifier": "^7.0.0",
     "vue": "^2.6.11"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "node-notifier": "^7.0.0"
   }
 }
