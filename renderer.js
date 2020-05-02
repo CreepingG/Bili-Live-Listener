@@ -1,16 +1,20 @@
 /* eslint-disable no-console */
-const {ipcRenderer, axios} = window;
-
-ipcRenderer.on('asynchronous-reply', function(event, arg) {
-    console.log(arg);
-});
+const {$send, axios} = window;
 
 const btn = document.getElementById('btn');
 const input = document.getElementById('input');
 
+input.oninput = function(){ /* 高度自适应 */
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+};
+input.value = window.$text;
+input.oninput();
+
 function GetRawInfo(roomid){
     return axios.get('https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByRoom?room_id=' + roomid).then(result=>result.data.data);
 }
+
 async function GetParsedInfo(roomid){
     let info = await GetRawInfo(roomid);
     console.log(info);
@@ -36,29 +40,34 @@ function ShowList(list){
         if (info.status){
             li.style.cursor = 'pointer';
             li.onclick = function(){
-                ipcRenderer.send('asynchronous-message', JSON.stringify({
+                $send({
                     action: 'open',
                     url: info.url
-                }));
+                });
             };
         }
         ul.appendChild(li);
     });
 }
 function SendNotification(title, body, url){
-    ipcRenderer.send('asynchronous-message', JSON.stringify({
-        action: 'send',
+    $send({
+        action: 'notify',
         title,
         body,
         url
-    }));
+    });
 }
 
 let cnt = 0;
 
 btn.onclick = async function(){
     let taskId = ++cnt;
-    let roomids = [...input.value.matchAll(/\d+/g)].map(v=>Number(v[0]));
+    const text = input.value;
+    $send({
+        data: text
+    });
+
+    let roomids = [...text.matchAll(/\d+/g)].map(v=>Number(v[0]));
     console.log(roomids);
     let infos = await Promise.all(roomids.map(GetParsedInfo));
     infos.forEach(info => {
@@ -85,10 +94,11 @@ btn.onclick = async function(){
     }, 30 * 1000);
 };
 
+/* f12打开控制台 */
 window.onkeydown = (ev)=>{
     if(ev.key === 'F12'){
-        ipcRenderer.send('asynchronous-message', JSON.stringify({
+        $send({
             action: 'f12'
-        }));
+        });
     }
 };
