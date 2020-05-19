@@ -12,7 +12,7 @@
     "Electron",
     "Bilibili"
   ],
-  "author": "GitHub",
+  "author": "CreepingG",
   "license": "CC0-1.0",
   "devDependencies": {
     "babel-eslint": "^10.1.0",

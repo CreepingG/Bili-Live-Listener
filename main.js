@@ -5,6 +5,7 @@ const notifier = require('node-notifier');
 const nodeConsole = require('console');
 const console = new nodeConsole.Console(process.stdout, process.stderr);
 const fs = require('fs');
+const axios = require('axios');
 
 // 使用浏览器打开网页
 function Open(url){
@@ -57,20 +58,45 @@ function createWindow () {
 	const ipcMain = require('electron').ipcMain;
 	ipcMain.on('asynchronous-message', function(event, arg) {
 		console.log(arg);
+		event.sender.send('asynchronous-reply', arg); // 这里直接log汉字会乱码，所以送回浏览器看
 		arg = JSON.parse(arg);
 		let action = arg.action;
-		if (action === 'notify'){
-			let {title, body, url} = arg;
-			// event.sender.send('asynchronous-reply', 'pong');
+		if (action === 'saveImg'){
+			let {url, fileName} = arg;
+			const iconName = path.join(__dirname, fileName); // 根据url决定文件后缀名
+			axios({
+				method: 'get',
+				url: url,
+				responseType: 'stream',
+			}).then(function(response) {
+				response.data.pipe(fs.createWriteStream(iconName));
+				event.sender.send('asynchronous-reply', JSON.stringify({
+					type: 'saveImgDone',
+					fileName: iconName,
+				}));
+			});
+		}
+		else if (action === 'notify'){
+			let {title, body, url, icon} = arg;
 			// let notification = new Notification(title, {body});
 			// notification.show();
+			// 自带的notification在windows上还需要添加应用程序用户模型ID 的快捷方式到开始菜单上，还是用别人的包方便
+			// On Windows 10, a shortcut to your app with an Application User Model ID must be installed to the Start Menu. 
+			// This can be overkill during development, so adding node_modules\electron\dist\electron.exe to your Start Menu also does the trick. 
+			// Navigate to the file in Explorer, right-click and 'Pin to Start Menu'. 
+			// You will then need to add the line app.setAppUserModelId(process.execPath) to your main process to see notifications.
+			
+			const btnText = 'goto';
 			notifier.notify({
 				title: title,
 				message: body,
+				icon: path.join(__dirname, icon),
 				sound: true,
-				appID: '开播提醒'
+				wait: true,
+				// appID: 'com.electron.bili-live-reminder', // 和actions无法同时生效
+				actions: [btnText],
 			}, (error, type, info)=>{
-				if (type !== 'timeout'){
+				if (typeof type === 'string' && type[0] === btnText[0]){ // 使用中文会导致两种不相等，不知为啥：'前往'=>'鍓嶅線','鍓嶋刊'
 					Open(url);
 				}
 			});
@@ -85,7 +111,17 @@ function createWindow () {
 			fs.writeFile('./config.txt', arg.data, console.log);
 		}
 	});
+	// 注册通知
+	// https://github.com/KDE/snoretoast
+	// -install <name> <application> <appID>
+	// Creates a shortcut <name> in the start menu which point to the executable <application>, appID used for the notifications.
+	notifier.notify({
+		install: `"Bili-reminder" "${app.getPath('exe')}" "com.electron.bili-live-reminder"`,
+		message: ''
+	});
 }
+console.log('bili-live-reminder ' + app.getPath('exe') + ' com.electron.bili-live-reminder');
+app.allowRendererProcessReuse = true;
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -105,7 +141,7 @@ app.on('activate', function () {
 	if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
-app.setAppUserModelId("com.electron.bili-live-reminder");
+// app.setAppUserModelId("com.electron.bili-live-reminder");
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.

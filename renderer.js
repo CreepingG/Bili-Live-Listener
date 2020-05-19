@@ -42,12 +42,13 @@ function ShowList(list){
         ul.appendChild(li);
     });
 }
-function SendNotification(title, body, url){
+function SendNotification(title, body, url, icon){
     $send({
         action: 'notify',
         title,
         body,
-        url
+        url,
+        icon
     });
 }
 
@@ -67,21 +68,31 @@ btn.onclick = async function(){
     infos.forEach(info => {
         console.log(info);
     });
+    // 使用url下载头像并记录，供通知使用
+    let avatars = infos.map(info=>{
+        const fileName = info.name + info.avatar.match(/\.\w+$/)[0];
+        $send({
+            action: 'saveImg',
+            url: info.avatar,
+            fileName: fileName,
+        });
+        return fileName;
+    });
     ShowList(infos);
     let task = setInterval(async function(){
         if (taskId !== cnt){
             clearInterval(task);
         }
         let newInfos = await Promise.all(roomids.map(GetParsedInfo));
-        // eslint-disable-next-line guard-for-in
         for(let i in newInfos){
+            if (typeof i !== "number") continue;
             let newInfo = newInfos[i];
             let prev = infos[i].status;
             let cur = newInfo.status;
             if (cur !== prev){
                 infos[i] = newInfo;
                 if (cur){
-                    SendNotification(newInfo.name + '开播了', newInfo.title, newInfo.url);
+                    SendNotification(newInfo.name + '开播了', newInfo.title, newInfo.url, avatars[i]);
                 }
             }
         }
