@@ -111,16 +111,7 @@ function createWindow () {
 			fs.writeFile('./config.txt', arg.data, console.log);
 		}
 	});
-	// 注册通知
-	// https://github.com/KDE/snoretoast
-	// -install <name> <application> <appID>
-	// Creates a shortcut <name> in the start menu which point to the executable <application>, appID used for the notifications.
-	notifier.notify({
-		install: `"Bili-reminder" "${app.getPath('exe')}" "com.electron.bili-live-reminder"`,
-		message: ''
-	});
 }
-console.log('bili-live-reminder ' + app.getPath('exe') + ' com.electron.bili-live-reminder');
 app.allowRendererProcessReuse = true;
 
 // This method will be called when Electron has finished
