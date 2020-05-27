@@ -85,7 +85,7 @@ btn.onclick = async function(){
         }
         let newInfos = await Promise.all(roomids.map(GetParsedInfo));
         for(let i in newInfos){
-            if (typeof i !== "number") continue;
+            if (!parseInt(i)) continue;
             let newInfo = newInfos[i];
             let prev = infos[i].status;
             let cur = newInfo.status;
